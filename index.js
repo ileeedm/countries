@@ -29,11 +29,9 @@ app.use(express.static("public"));
      
       db.query("SELECT country_code FROM visited_countries",(err,res)=>{
         
-     
-
       visitedCountries = res.rows
       let total = visitedCountries.length
-      console.log(total)
+    
       let countryCodes = visitedCountries.map(country => country.country_code);
      
       response.render("index.ejs",{countries:countryCodes,total});
@@ -44,7 +42,6 @@ app.use(express.static("public"));
  
 });
   
-
       app.post("/add", async (req, response) => {
         let addedCountry = req.body.country
        
@@ -52,9 +49,9 @@ app.use(express.static("public"));
         db.query("SELECT country_code FROM countries WHERE country_name ILIKE ($1)",[addedCountry],(err, resp)=>{
           visitedCountries = resp.rows
           let countryCodes = visitedCountries.map(country => country.country_code);
+          console.log(countryCodes)
         
-        
-             db.query("INSERT INTO visited_countries(country_code) VALUES ($1)",[countryCodes[0]],(err, res)=>{ 
+             db.query("INSERT INTO visited_countries(country_code) VALUES ($1) ",[countryCodes[0]],(err, res)=>{ 
 
               if(err){
                
@@ -64,33 +61,17 @@ app.use(express.static("public"));
                     let error = {}
                     visitedCountries = res.rows
                     let total = visitedCountries.length
-                    console.log(total)
+                    
                     let countryCodes = visitedCountries.map(country => country.country_code);
                    
                     response.render("index.ejs",{countries:countryCodes,total,error:error});
                   
-                
-                });
-                
+               });
                 
               } else {
                 
-                db.query("SELECT country_code FROM visited_countries",(err,res)=>{
-                  if(err){
-                    console.log("Error executing query country already exists")
-                    
-                  } else {
-                    visitedCountries = res.rows
-                    let total = visitedCountries.length
-                    console.log(total)
-                    let countryCodes = visitedCountries.map(country => country.country_code);
-                   
-                    response.render("index.ejs",{countries:countryCodes,total});
-                  }
-
-                });
+                response.redirect('/')
                
-              
                 } 
 
               });
