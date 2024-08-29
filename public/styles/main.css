@@ -102,3 +102,6 @@ button {
   left: 0;
   bottom: 0;
 }
+.placeholder::placeholder{
+  color: rgb(154, 28, 28);
+}

@@ -11,7 +11,7 @@
 <body>
   <form action="/add" method="post">
     <% if (locals.error){%>
-      <input type="text" name="country" autofocus placeholder= 'Country name already exists'>
+      <input type="text" name="country"  autofocus placeholder= 'Country name is already added, or input is invalid' class='placeholder'>
     <% } else { %>
       <input type="text" name="country" autofocus placeholder= 'Enter country name'%>>
     <% } %>

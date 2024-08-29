@@ -23,32 +23,33 @@ var visitedCountries = []
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-db.query("SELECT country_code FROM visited_countries",(err, res)=>{
-  if(err){
-    console.error("Error executing query", err.stack);
-  } else {
-    visitedCountries = res.rows
+
    
     app.get("/", async (req, response) => {
- 
+     
+      db.query("SELECT country_code FROM visited_countries",(err,res)=>{
+        
+     
 
+      visitedCountries = res.rows
       let total = visitedCountries.length
+      console.log(total)
       let countryCodes = visitedCountries.map(country => country.country_code);
-    
      
       response.render("index.ejs",{countries:countryCodes,total});
-     
+      
+          
     
     });
-  }
-
  
-})
+});
+  
+
       app.post("/add", async (req, response) => {
         let addedCountry = req.body.country
        
         
-        db.query("SELECT country_code FROM countries WHERE country_name=($1)",[addedCountry],(err, resp)=>{
+        db.query("SELECT country_code FROM countries WHERE country_name ILIKE ($1)",[addedCountry],(err, resp)=>{
           visitedCountries = resp.rows
           let countryCodes = visitedCountries.map(country => country.country_code);
         
@@ -56,14 +57,22 @@ db.query("SELECT country_code FROM visited_countries",(err, res)=>{
              db.query("INSERT INTO visited_countries(country_code) VALUES ($1)",[countryCodes[0]],(err, res)=>{ 
 
               if(err){
-                console.error("Error executing query now", err.stack);
-                let error = "Country already exists"
-                visitedCountries = resp.rows
-                let total = visitedCountries.length
-                let countryCodes = visitedCountries.map(country => country.country_code);
-                console.log(countryCodes)
                
-                response.render("index.ejs",{countries:countryCodes,total},{error:error});
+               
+                db.query("SELECT country_code FROM visited_countries",(err,res)=>{
+                 
+                    let error = {}
+                    visitedCountries = res.rows
+                    let total = visitedCountries.length
+                    console.log(total)
+                    let countryCodes = visitedCountries.map(country => country.country_code);
+                   
+                    response.render("index.ejs",{countries:countryCodes,total,error:error});
+                  
+                
+                });
+                
+                
               } else {
                 
                 db.query("SELECT country_code FROM visited_countries",(err,res)=>{
