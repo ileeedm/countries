@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 
@@ -46,8 +46,7 @@ checkVisisted(req,response,error,errorOne)
 app.post("/add", async (req, response) => {
   let addedCountry = req.body.country
   
-  
-  db.query("SELECT country_code FROM countries WHERE country_name ILIKE ($1)",[addedCountry],(err, resp)=>{
+  db.query("SELECT country_code FROM countries WHERE country_name ILIKE ($1)",[addedCountry],async (err, resp)=>{
     console.log(addedCountry)
     
     if(resp.rows.length <= 0){
@@ -60,22 +59,20 @@ app.post("/add", async (req, response) => {
       visitedCountries = resp.rows
       let countryCodes = visitedCountries.map(country => country.country_code);
       console.log(countryCodes)
-        db.query("INSERT INTO visited_countries(country_code) VALUES ($1) ",[countryCodes[0]],(err, res)=>{ 
-
-        if(err){
-          
+      try {
+        await db.query(
+          "INSERT INTO visited_countries (country_code) VALUES ($1)",
+          [countryCodes[0]]
+        );
+        response.redirect("/");
+      } catch (err) {
+       
         error.push(1)
         checkVisisted(req,response,error,errorOne)
         error = []
-          
-        } else {
-          
-          response.redirect('/')
-          } 
-
-        });
       }
-    })
+    }
+  })
 })
 
 app.listen(port, () => {
