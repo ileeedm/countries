@@ -10,12 +10,15 @@
 
 <body>
   <form action="/add" method="post">
-    <% if (locals.error){%>
-      <input type="text" name="country"  autofocus placeholder= 'Country name is already added, or input is invalid' class='placeholder'>
-    <% } else { %>
-      <input type="text" name="country" autofocus placeholder= 'Enter country name'%>>
+    <% if ( error != 0 ){ %>
+      <input type="text" name="country"  autofocus placeholder= 'Country is already added' class='placeholder'>
+      <% } else if (errorOne != 0 ) { %>
+        <input type="text" name="country" autofocus placeholder= 'Invalid input for country' class='placeholder'>
+      <% } else { %>
+      <input type="text" name="country" autofocus placeholder= 'Enter country name'>
     <% } %>
     <button type="submit">Add</button>
+   
   </form>
 
   <section class="ag-canvas">
@@ -379,7 +382,8 @@
   </h2>
   <script>
      
-     
+     const error = '<%= error %>'
+     const errorOne = '<%= errorOne %>'
      const country_codes_str = "<%= countries %>"
    
      const country_codes = country_codes_str.split(',');
